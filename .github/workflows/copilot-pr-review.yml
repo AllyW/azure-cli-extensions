@@ -1,0 +1,31 @@
+name: Auto Review PR 
+
+on:
+  pull_request_target:
+      types: [opened, synchronize, labeled, unlabeled ]
+      branches:
+        - main
+
+permissions: {}
+
+jobs:
+  copilot-pr-code-review:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'copilot-code-review') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Check Init Event
+        env:
+           action: ${{ toJSON(github.event.action) }}
+           label: ${{ toJSON(github.event.label) }}
+        run: |
+          echo start review module changed
+      - name: Copilot PR Review
+        uses: AllyW/copilot-pr-review@v0.1.12
+        with:
+            APIKEY: ${{ secrets.APIKEY }}
+            ENDPOINT: ${{ secrets.ENDPOINT }}
+            PR_URL: ${{ toJSON(github.event) }}
+            AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

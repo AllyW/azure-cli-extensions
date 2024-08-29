@@ -24,6 +24,7 @@ output_file = os.environ.get('output_file', None)
 add_labels_file = os.environ.get('add_labels_file', None)
 remove_labels_file = os.environ.get('remove_labels_file', None)
 pr_user = os.environ.get('pr_user', "")
+pr_title = os.environ.get('pr_title', "")
 
 changed_module_list = os.environ.get('changed_module_list', "").split()
 diff_code_file = os.environ.get('diff_code_file', "")
@@ -35,6 +36,7 @@ DEFAULT_VERSION = "0.0.0"
 INIT_RELEASE_VERSION = "1.0.0b1"
 DEFAULT_MESSAGE = " - For more info about extension versioning, please refer to [Extension version schema](https://github.com/Azure/azure-cli/blob/release/doc/extensions/versioning_guidelines.md)"
 block_pr = 0
+labels_add = []
 
 cli_ext_path = get_ext_repo_paths()[0]
 print("get_cli_repo_path: ", get_cli_repo_path())
@@ -192,6 +194,9 @@ def get_next_version_pre_tag():
         return VERSION_STABLE_TAG
     elif VERSION_PREVIEW_TAG in pr_label_list:
         return VERSION_PREVIEW_TAG
+    elif pr_title.lower().find(VERSION_STABLE_TAG):
+        labels_add.append(VERSION_STABLE_TAG)
+        return VERSION_STABLE_TAG
     else:
         return None
 
@@ -325,19 +330,21 @@ def save_comment_message(comment_message):
 def save_label_output():
     with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
         print(f'BlockPR={block_pr}', file=fh)
-    add_label_dict = {
-        "labels": ["release-version-block"]
-    }
     removed_label = "release-version-block"
     if block_pr == 0:
         with open(result_path + "/" + remove_labels_file, "w") as f:
             f.write(removed_label + "\n")
     else:
         # add block label and empty release label file
-        with open(result_path + "/" + add_labels_file, "w") as f:
-            json.dump(add_label_dict, f)
         with open(result_path + "/" + remove_labels_file, "w") as f:
             pass
+        labels_add.append("release-version-block")
+    add_label_dict = {
+        "labels": labels_add
+    }
+    if labels_add:
+        with open(result_path + "/" + add_labels_file, "w") as f:
+            json.dump(add_label_dict, f)
 
 
 def main():

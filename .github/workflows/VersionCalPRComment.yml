@@ -126,6 +126,7 @@ jobs:
         env:
           pr_label_list: ${{ toJson(github.event.pull_request.labels.*.name) }}
           pr_user: ${{ github.event.pull_request.user.login }}
+          pr_title: ${{ github.event.pull_request.title }}
           base_branch: ${{ github.event.pull_request.base.ref }}
           base_branch_pre: "upstream"
           diff_code_file: "diff_codes.txt"

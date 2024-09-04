@@ -23,11 +23,12 @@ jobs:
         run: |
           echo start review module changed
       - name: Copilot PR Review
-        uses: AllyW/copilot-pr-review@v0.1.17
+        uses: AllyW/copilot-pr-review@v0.1.18
         with:
             APIKEY: ${{ secrets.APIKEY }}
             ENDPOINT: ${{ secrets.ENDPOINT }}
             PR_EVENT: ${{ toJSON(github.event) }}
             AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             code_suggest: True
+            pr_summary: True
             

@@ -10,7 +10,7 @@ permissions: {}
 
 jobs:
   copilot-code-review:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'copilot-code-review') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'copilot-code-review') }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

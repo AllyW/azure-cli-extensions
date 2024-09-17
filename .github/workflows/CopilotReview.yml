@@ -23,7 +23,7 @@ jobs:
         run: |
           echo start review module
       - name: Copilot PR Review
-        uses: AllyW/copilot-pr-review@v0.1.23
+        uses: AllyW/copilot-pr-review@v0.1.24
         with:
           APIKEY: ${{ secrets.APIKEY }}
           ENDPOINT: ${{ secrets.ENDPOINT }}

@@ -129,10 +129,14 @@ def clean_mod_of_azdev(mod):
     """
     be sure to get all the required info before removing mod in azdev
     """
+    print("removing azdev extensions: ", mod)
     cmd = ["azdev", "extension", "remove", mod]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when removing {mod} from azdev')
+    cmd = ["az", "extension", "list", "-o", "table"]
+    print("cmd: ", cmd)
+    subprocess.run(cmd)
 
 
 def install_mod_of_last_version(pkg_name, pre_release):
@@ -142,16 +146,22 @@ def install_mod_of_last_version(pkg_name, pre_release):
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when adding {pkg_name} from source {whl_file_url}')
+    cmd = ["az", "extension", "list", "-o", "table"]
+    print("cmd: ", cmd)
+    subprocess.run(cmd)
 
 
 def remove_mod_of_last_version(pkg_name):
-    cmd = ['az', 'extension', 'remove', '-n', {pkg_name}]
+    cmd = ['az', 'extension', 'remove', '-n', pkg_name]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when removing {pkg_name}')
+    cmd = ["az", "extension", "list", "-o", "table"]
+    print("cmd: ", cmd)
+    subprocess.run(cmd)
 
 def gen_metadata_from_whl(pkg_name, target_folder):
-    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', target_folder]
+    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', "./base_meta", "--debug"]
     print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:

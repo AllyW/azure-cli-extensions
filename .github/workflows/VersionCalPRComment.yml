@@ -140,20 +140,13 @@ jobs:
           chmod +x env/bin/activate
           source ./env/bin/activate
           set -ev
-#          git checkout "$base_branch_pre"/"$base_branch"
-#
-#          for mod in ${changed_module_list[@]}
-#          do
-#            echo changed module: "${mod}"
-#            azdev extension add "${mod}" && azdev command-change meta-export "${mod}" --meta-output-path ./"$base_meta_path"/ && azdev extension remove "${mod}"
-#          done
           mkdir "$base_meta_path"
           mkdir "$diff_meta_path"
 
           # some module, like confcom, will change local data files, like data/rules.rego, during installation, need to reset when checkout different branch
           git checkout -f "$diff_branch"
           # always use the latest index.json and scripts from base branch
-#          git checkout "$base_branch_pre"/"$base_branch" -- scripts
+          # git checkout "$base_branch_pre"/"$base_branch" -- scripts
           git checkout "$base_branch_pre"/"$base_branch" -- src/index.json 
           
           for mod in ${changed_module_list[@]}

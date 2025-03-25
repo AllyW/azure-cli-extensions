@@ -151,7 +151,7 @@ def remove_mod_of_last_version(pkg_name):
         raise Exception(f'Error when removing {pkg_name}')
 
 def gen_metadata_from_whl(pkg_name, target_folder):
-    cmd = ['azdev', 'command-change', 'meta-export', {pkg_name}, '--include-whl-extensions', '--meta-output-path', target_folder]
+    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', target_folder]
     print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:

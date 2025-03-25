@@ -159,7 +159,7 @@ def remove_mod_of_last_version(pkg_name):
     check_extension_list()
 
 def gen_metadata_from_whl(pkg_name, target_folder):
-    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', "./base_meta", "--debug"]
+    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', target_folder, "--debug"]
     print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
@@ -250,7 +250,7 @@ def extract_module_version_info(mod_update_info, mod):
     clean_mod_of_azdev(mod)
     print("Start generating base metadata")
     install_mod_of_last_version(pkg_name, pre_release)
-    gen_metadata_from_whl(pkg_name, cli_ext_path + "/" + base_meta_path)
+    gen_metadata_from_whl(pkg_name, cli_ext_path + base_meta_path)
     remove_mod_of_last_version(pkg_name)
     print("End generating base metadata")
     base_meta_file = os.path.join(cli_ext_path, base_meta_path, "az_" + pkg_name + "_meta.json")

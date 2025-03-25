@@ -138,6 +138,7 @@ def clean_mod_of_azdev(mod):
 def install_mod_of_last_version(pkg_name, pre_release):
     whl_file_url = pre_release['downloadUrl']
     cmd = ["az", "extension", "add", "-s", whl_file_url, "-y"]
+    print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when adding {pkg_name} from source {whl_file_url}')

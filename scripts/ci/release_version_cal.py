@@ -236,7 +236,7 @@ def extract_module_version_info(mod_update_info, mod):
     pkg_name = get_mod_package_name(mod)
     pre_release = get_module_metadata_of_max_version(pkg_name)
     print(f"Get prerelease info for mod: {mod} as below:")
-    print(json.dump(pre_release))
+    print(json.dumps(pre_release))
     clean_mod_of_azdev(mod)
     print("Start generating base metadata")
     install_mod_of_last_version(pkg_name, pre_release)

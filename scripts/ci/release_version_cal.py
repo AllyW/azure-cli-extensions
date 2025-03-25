@@ -124,11 +124,17 @@ def extract_module_metadata_update_info_pre(mod_update_info, mod):
                 if module_meta_update_match:
                     mod_update_info["meta_updated"] = True
 
+def check_extension_list():
+    cmd = ["az", "extension", "list", "-o", "table"]
+    print("cmd: ", cmd)
+    res = subprocess.run(cmd, stdout=subprocess.PIPE)
+    print(res.stdout.decode("utf8"))
 
 def clean_mod_of_azdev(mod):
     """
     be sure to get all the required info before removing mod in azdev
     """
+    print("removing azdev extensions: ", mod)
     cmd = ["azdev", "extension", "remove", mod]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
@@ -138,19 +144,23 @@ def clean_mod_of_azdev(mod):
 def install_mod_of_last_version(pkg_name, pre_release):
     whl_file_url = pre_release['downloadUrl']
     cmd = ["az", "extension", "add", "-s", whl_file_url, "-y"]
+    print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when adding {pkg_name} from source {whl_file_url}')
+    check_extension_list()
 
 
 def remove_mod_of_last_version(pkg_name):
-    cmd = ['az', 'extension', 'remove', '-n', {pkg_name}]
+    cmd = ['az', 'extension', 'remove', '-n', pkg_name]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when removing {pkg_name}')
+    check_extension_list()
 
 def gen_metadata_from_whl(pkg_name, target_folder):
-    cmd = ['azdev', 'command-change', 'meta-export', {pkg_name}, '--include-whl-extensions', '--meta-output-path', target_folder]
+    cmd = ['azdev', 'command-change', 'meta-export', pkg_name, '--include-whl-extensions', '--meta-output-path', target_folder, "--debug"]
+    print("cmd: ", cmd)
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when generating metadata from whl for {pkg_name}')
@@ -236,11 +246,12 @@ def extract_module_version_info(mod_update_info, mod):
     pkg_name = get_mod_package_name(mod)
     pre_release = get_module_metadata_of_max_version(pkg_name)
     print(f"Get prerelease info for mod: {mod} as below:")
-    print(json.dump(pre_release))
+    print(json.dumps(pre_release))
     clean_mod_of_azdev(mod)
     print("Start generating base metadata")
     install_mod_of_last_version(pkg_name, pre_release)
-    gen_metadata_from_whl(pkg_name, cli_ext_path + "/" + base_meta_path)
+    base_meta_folder = os.path.join(cli_ext_path, base_meta_path)
+    gen_metadata_from_whl(pkg_name, base_meta_folder)
     remove_mod_of_last_version(pkg_name)
     print("End generating base metadata")
     base_meta_file = os.path.join(cli_ext_path, base_meta_path, "az_" + pkg_name + "_meta.json")

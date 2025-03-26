@@ -16,7 +16,7 @@ from knack.help_files import helps
 
 helps['monitor data-collection'] = '''
     type: group
-    short-summary: Manage data collection for monitor control service
+    short-summary: Manage data collection for monitor control service  erfrftr
 '''
 
 helps['monitor data-collection rule'] = """

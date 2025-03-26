@@ -20,7 +20,7 @@ def load_command_table(self, _):
     with self.command_group('network manager connect-config') as g:
         from .custom import ConnectConfigCreate, ConnectConfigUpdate
         self.command_table["network manager connect-config create"] = ConnectConfigCreate(loader=self)
-        self.command_table["network manager connect-config update"] = ConnectConfigUpdate(loader=self)
+        # self.command_table["network manager connect-config update"] = ConnectConfigUpdate(loader=self)
         # g.custom_command('create', 'network_manager_connect_config_create')
         # g.custom_command('update', 'network_manager_connect_config_update')
 

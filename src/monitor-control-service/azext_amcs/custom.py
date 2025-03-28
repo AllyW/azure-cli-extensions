@@ -32,19 +32,19 @@ class EndpointCreate(_EndpointCreate):
 
 
 def monitor_data_collection_rule_association_list(cmd, resource_group_name=None, data_collection_rule_name=None,
-                                                  data_collection_endpoint_name=None, resource_uri=None):
+                                                  resource_uri=None):
     if resource_group_name and data_collection_rule_name is not None:
         from .aaz.latest.monitor.data_collection.rule.association import List as ListByRule
         return ListByRule(cli_ctx=cmd.cli_ctx)(command_args={
             "data_collection_rule_name": data_collection_rule_name,
             "resource_group": resource_group_name,
         })
-    if resource_group_name and data_collection_endpoint_name is not None:
-        from .aaz.latest.monitor.data_collection.endpoint.association import List as ListByEndpoint
-        return ListByEndpoint(cli_ctx=cmd.cli_ctx)(command_args={
-            "data_collection_endpoint_name": data_collection_rule_name,
-            "resource_group": resource_group_name,
-        })
+    # if resource_group_name and data_collection_endpoint_name is not None:
+    #     from .aaz.latest.monitor.data_collection.endpoint.association import List as ListByEndpoint
+    #     return ListByEndpoint(cli_ctx=cmd.cli_ctx)(command_args={
+    #         "data_collection_endpoint_name": data_collection_rule_name,
+    #         "resource_group": resource_group_name,
+    #     })
     from .aaz.latest.monitor.data_collection.rule.association import ListByResource
     return ListByResource(cli_ctx=cmd.cli_ctx)(command_args={"resource_uri": resource_uri})
 

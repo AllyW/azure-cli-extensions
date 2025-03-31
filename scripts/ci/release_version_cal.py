@@ -139,10 +139,10 @@ def clean_mod_of_azdev(mod):
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     if result.returncode:
         raise Exception(f'Error when removing {mod} from azdev')
-    cmd = ["rm", "-rf", "./src/" + mod]
-    result = subprocess.run(cmd, stdout=subprocess.PIPE)
-    if result.returncode:
-        raise Exception(f'Error when removing {mod} from src')
+    # cmd = ["rm", "-rf", "./src/" + mod]
+    # result = subprocess.run(cmd, stdout=subprocess.PIPE)
+    # if result.returncode:
+    #     raise Exception(f'Error when removing {mod} from src')
 
 
 def install_mod_of_last_version(pkg_name, pre_release):

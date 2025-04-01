@@ -7,7 +7,7 @@
 # Changes may cause incorrect behavior and will be lost if the code is
 # regenerated.
 # --------------------------------------------------------------------------
-
+# test
 from azure.cli.core import AzCommandsLoader
 from azure.cli.core.commands import AzCommandGroup
 try:

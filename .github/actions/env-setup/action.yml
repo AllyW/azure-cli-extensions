@@ -1,8 +1,6 @@
 name: GH Azdev Setup
 description: 'azdev env setup'
 
-permissions: {}
-
 runs:
   using: 'composite'
   steps:

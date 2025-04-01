@@ -16,6 +16,8 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Checkout CLI extension repo
+        uses: actions/checkout@v4
       - name: Azdev Env Setup
         uses: ./.github/actions/env-setup
       - name: Get Diff Files

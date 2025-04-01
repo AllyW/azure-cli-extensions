@@ -1,0 +1,134 @@
+name: GH Azdev Linter
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+      types: [opened, labeled, unlabeled, synchronize]
+      branches:
+        - main
+
+permissions: {}
+
+jobs:
+  linter-job:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Check Init GH Event
+        env:
+           action: ${{ toJSON(github.event.action) }}
+           label: ${{ toJSON(github.event.label) }}
+        run: |
+          echo version cal job start
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+           python-version: "3.11"
+      - name: Checkout CLI extension repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # checkout all branches
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}  # checkout pull request branch
+      - name: Show work directory after site cloned
+        run: |
+           pwd
+           ls
+      - name: Get Diff Files
+        env:
+          bash_sha: ${{ github.event.pull_request.base.sha }}
+          base_branch: ${{ github.event.pull_request.base.ref }}
+          base_repo: ${{ github.event.pull_request.base.repo.clone_url }}
+          base_branch_pre: "upstream"
+          diff_sha: ${{ github.event.pull_request.head.sha }}
+          diff_branch: ${{ github.event.pull_request.head.ref }}
+          repo_full_name: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -x
+          git --version
+          git log --oneline | head -n 10
+          git branch -a
+          git fetch "$base_repo" "$base_branch":"$base_branch_pre"/"$base_branch"
+          git checkout "$base_branch_pre"/"$base_branch"
+          git log --oneline | head -n 10
+          git checkout "$diff_branch"
+          git log --oneline | head -n 10
+          git --no-pager diff --name-only --diff-filter=ACMRT "$base_branch_pre"/"$base_branch"..."$diff_branch"
+          set +e
+          # by default set -e is enabled to run commands, intermediate command failure may cause the whole step to fail. disable it here.
+          git --no-pager diff --name-only --diff-filter=ACMRT "$base_branch_pre"/"$base_branch"..."$diff_branch" | grep -v "/tests/" > changed_files
+          cat changed_files
+          cat changed_files | grep src/ | awk -F"src/" '{print $2}'| grep / | awk -F"/" '{print $1}' | sort | uniq
+          echo "changed_module_list=$(cat changed_files | grep src/ | awk -F"src/" '{print $2}'| grep / | awk -F"/" '{print $1}' | sort | uniq | xargs)" >> $GITHUB_ENV
+          git --no-pager diff --diff-filter=ACMRT "$base_branch_pre"/"$base_branch"..."$diff_branch" > "$diff_code_file"
+      - name: Display PR Diff Modules
+        run: |
+          for mod in ${changed_module_list[@]}
+          do
+            echo changed module: "${mod}"
+          done
+          if [ -z "$changed_module_list" ]; then
+            echo "no_changed_mod=true" >> $GITHUB_ENV
+          else
+            echo "no_changed_mod=false" >> $GITHUB_ENV
+          fi
+          echo array length
+          echo ${#changed_module_list[@]}
+      - name: Checkout CLI main repo
+        if: ${{ env.no_changed_mod == 'false' }}
+        uses: actions/checkout@v4
+        with:
+           repository: Azure/azure-cli
+           path: ./azure-cli
+      - name: Move the main repo to the same level as the extension repo
+        if: ${{ env.no_changed_mod == 'false' }}
+        run: |
+          pwd
+          ls
+          mv azure-cli ../
+          cd ../
+          pwd
+          ls
+      - name: Install azdev
+        if: ${{ env.no_changed_mod == 'false' }}
+        run: | 
+           python -m pip install --upgrade pip
+           set -ev
+           python -m venv env
+           chmod +x env/bin/activate
+           source ./env/bin/activate
+           pip install azdev
+           azdev --version
+           cd ../
+           azdev setup -c azure-cli -r azure-cli-extensions --debug
+           az --version
+           pip list -v
+      - name: Gen Base and Diff Metadata
+        if: ${{ env.no_changed_mod == 'false' }}
+        id: get_comment_message
+        env:
+          pr_label_list: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          pr_user: ${{ github.event.pull_request.user.login }}
+          base_branch: ${{ github.event.pull_request.base.ref }}
+          base_branch_pre: "upstream"
+          diff_branch: ${{ github.event.pull_request.head.ref }}
+        run: |
+          chmod +x env/bin/activate
+          source ./env/bin/activate
+          set -ev
+
+          # some module, like confcom, will change local data files, like data/rules.rego, during installation, need to reset when checkout different branch
+          git checkout -f "$diff_branch"
+          # always use the latest index.json and scripts from base branch
+          git checkout "$base_branch_pre"/"$base_branch" -- scripts
+          git checkout "$base_branch_pre"/"$base_branch" -- src/index.json 
+          
+          merge_base=$(git merge-base HEAD "$base_branch_pre"/"$base_branch")
+          
+          for mod in ${changed_module_list[@]}
+          do
+            echo changed module: "${mod}"
+            azdev extension add "${mod}" && azdev linter "${mod}" --min-severity medium --repo ./ --src "$diff_branch" --tgt "$merge_base" 
+          done

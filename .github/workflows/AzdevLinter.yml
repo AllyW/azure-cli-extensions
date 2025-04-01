@@ -16,6 +16,12 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Checkout CLI extension repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # checkout all branches
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}  # checkout pull request branch
       - name: Azdev Env Setup
         uses: ./.github/workflows/AzdevSetup.yml
       - name: Get Diff Files

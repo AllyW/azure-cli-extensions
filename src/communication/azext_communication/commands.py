@@ -8,7 +8,7 @@
 # pylint: disable=too-many-lines
 # pylint: disable=too-many-statements
 
-# from azure.cli.core.commands import CliCommandType
+from azure.cli.core.commands import CliCommandType
 
 from azext_communication.custom import IdentityAssign
 from azext_communication.custom import IdentityRemove

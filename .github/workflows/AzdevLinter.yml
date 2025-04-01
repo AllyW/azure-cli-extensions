@@ -10,32 +10,14 @@ on:
 permissions: {}
 
 jobs:
-  linter-job:
+  azdev-linter:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
       contents: read
     steps:
-      - name: Check Init GH Event
-        env:
-           action: ${{ toJSON(github.event.action) }}
-           label: ${{ toJSON(github.event.label) }}
-        run: |
-          echo version cal job start
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-           python-version: "3.11"
-      - name: Checkout CLI extension repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # checkout all branches
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}  # checkout pull request branch
-      - name: Show work directory after site cloned
-        run: |
-           pwd
-           ls
+      - name: Azdev Env Setup
+        uses: ./.github/workflows/AzdevSetup.yml
       - name: Get Diff Files
         env:
           bash_sha: ${{ github.event.pull_request.base.sha }}
@@ -75,38 +57,9 @@ jobs:
           fi
           echo array length
           echo ${#changed_module_list[@]}
-      - name: Checkout CLI main repo
+
+      - name: Run Azdev Linter
         if: ${{ env.no_changed_mod == 'false' }}
-        uses: actions/checkout@v4
-        with:
-           repository: Azure/azure-cli
-           path: ./azure-cli
-      - name: Move the main repo to the same level as the extension repo
-        if: ${{ env.no_changed_mod == 'false' }}
-        run: |
-          pwd
-          ls
-          mv azure-cli ../
-          cd ../
-          pwd
-          ls
-      - name: Install azdev
-        if: ${{ env.no_changed_mod == 'false' }}
-        run: | 
-           python -m pip install --upgrade pip
-           set -ev
-           python -m venv env
-           chmod +x env/bin/activate
-           source ./env/bin/activate
-           pip install azdev
-           azdev --version
-           cd ../
-           azdev setup -c azure-cli -r azure-cli-extensions --debug
-           az --version
-           pip list -v
-      - name: Gen Base and Diff Metadata
-        if: ${{ env.no_changed_mod == 'false' }}
-        id: get_comment_message
         env:
           pr_label_list: ${{ toJson(github.event.pull_request.labels.*.name) }}
           pr_user: ${{ github.event.pull_request.user.login }}
@@ -123,7 +76,6 @@ jobs:
           # always use the latest index.json and scripts from base branch
           git checkout "$base_branch_pre"/"$base_branch" -- scripts
           git checkout "$base_branch_pre"/"$base_branch" -- src/index.json 
-          
           merge_base=$(git merge-base HEAD "$base_branch_pre"/"$base_branch")
           
           for mod in ${changed_module_list[@]}

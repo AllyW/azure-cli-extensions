@@ -79,6 +79,7 @@ jobs:
           git checkout "$base_branch_pre"/"$base_branch" -- scripts
           git checkout "$base_branch_pre"/"$base_branch" -- src/index.json 
           merge_base=$(git merge-base HEAD "$base_branch_pre"/"$base_branch")
+          echo merge_base: "$merge_base"
           
           for mod in ${changed_module_list[@]}
           do

@@ -8,9 +8,6 @@ permissions: {}
 jobs:
   azdev-setup-basic:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-      contents: read
     steps:
       - name: Check Init GH Event
         env:

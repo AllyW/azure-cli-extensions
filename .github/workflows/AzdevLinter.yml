@@ -92,6 +92,6 @@ jobs:
             azdev extension add "${mod}"
             # ado linter task
             azdev linter "${mod}" --min-severity medium
-            # linter task that needs git commit info
-            azdev linter "${mod}" --repo ./ --src "$diff_branch" --tgt "$merge_base" --rules missing_command_example
           done
+          # linter task that needs git commit info
+          azdev linter EXT --repo ./ --src "$diff_branch" --tgt "$merge_base" --rules missing_command_example

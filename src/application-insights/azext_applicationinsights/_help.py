@@ -140,6 +140,20 @@ helps['monitor app-insights query'] = """
           az monitor app-insights query --app e292531c-eb03-4079-9bb0-fe6b56b99f8b --analytics-query 'requests | summarize count() by bin(timestamp, 1h)' --offset 1h30m
 """
 
+helps['monitor app-insights query-add'] = """
+    type: command
+    short-summary: Execute a query over data in your application.
+    parameters:
+      - name: --offset
+        short-summary: >
+          Time offset of the query range, in ##d##h format.
+        long-summary: >
+          Can be used with either --start-time or --end-time. If used with --start-time, then
+          the end time will be calculated by adding the offset. If used with --end-time (default), then
+          the start time will be calculated by subtracting the offset. If --start-time and --end-time are
+          provided, then --offset will be ignored.
+"""
+
 helps['monitor app-insights metrics show'] = """
     type: command
     short-summary: View the value of a single metric.

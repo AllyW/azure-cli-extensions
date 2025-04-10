@@ -42,8 +42,7 @@ def execute_query(cmd, client, application, analytics_query, start_time=None, en
             raise ValueError("The Application Insight is not found. Please check the app id again.")
         raise ex
 
-def execute_query_add(cmd, client, start_time=None, end_time=None, offset='1h',
-                      resource_group_name=None):
+def execute_query_add(cmd, client, offset='1h'):
     pass
 
 

@@ -42,6 +42,9 @@ def execute_query(cmd, client, application, analytics_query, start_time=None, en
             raise ValueError("The Application Insight is not found. Please check the app id again.")
         raise ex
 
+def execute_query_add(cmd, client, offset='1h'):
+    pass
+
 
 def get_events(cmd, client, application, event_type, event=None, start_time=None, end_time=None, offset='1h', resource_group_name=None):
     timespan = get_timespan(cmd.cli_ctx, start_time, end_time, offset)

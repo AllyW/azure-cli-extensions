@@ -94,6 +94,7 @@ def load_command_table(self, _):
 
     with self.command_group('monitor app-insights', query_sdk) as g:
         g.custom_command('query', 'execute_query')
+        g.custom_command('query-add', 'execute_query_add')
 
     with self.command_group('monitor app-insights component linked-storage'):
         from .custom import LinkedStorageAccountLink, LinkedStorageAccountUpdate, LinkedStorageAccountShow, LinkedStorageAccountUnlink

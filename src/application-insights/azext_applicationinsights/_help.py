@@ -9,7 +9,7 @@ from knack.help_files import helps
 
 helps['monitor app-insights'] = """
     type: group
-    short-summary: Commands for querying data in Application Insights applications.
+    short-summary: Commands for querying data in Application Insights applications. <test abd>
     parameters:
       - name: --offset
         short-summary: >

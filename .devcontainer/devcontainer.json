@@ -8,9 +8,8 @@
   "onCreateCommand": "python -m venv venv",
   "postCreateCommand": "REPO_NAME=$(basename $GITHUB_REPOSITORY) && cat $REPO_NAME/.devcontainer/login.sh >> ~/.bashrc && cp $REPO_NAME/.devcontainer/setup.sh easy_setup.sh && chmod +x easy_setup.sh",
   "hostRequirements": {
-    "cpus": 16,
-    "memory": "64gb",
-    "storage": "128gb"
+    "cpus": 4,
+    "memory": "16gb"
   },
   "customizations": {
     "vscode": {

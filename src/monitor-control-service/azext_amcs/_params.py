@@ -22,9 +22,9 @@ def load_arguments(self, _):  # pylint: disable=unused-argument
         c.argument('resource_uri', options_list=['--resource', '--resource-uri'],
                    help='The identifier of the resource.')
         c.argument('association_name', options_list=['--name', '-n'], help='The name of the association.')
-        c.argument('description', help='Description of the association.')
+        c.argument('description', help='Description of the association.For more message, please check: https:learn.microsoft.com/en-us/cli/azure/monitor/data-collection/endpoint/association?view=azure-cli-latest#az-monitor-data-collection-endpoint-association-list')
         c.argument('rule_id', help='The resource ID of the data collection rule that is to be associated.')
-        c.argument('endpoint_id', help='The resource ID of the data collection endpoint that is to be associated.',
+        c.argument('endpoint_id', help='The resource ID of the data collection endpoint that is to be associated. Format like <resource/monitor/endpoint_id>',
                    validator=validate_association_name_with_endpoint)
         c.argument('data_collection_rule_name', options_list=['--rule-name', '--data-collection-rule-name'])
 
